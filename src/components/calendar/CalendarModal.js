@@ -4,6 +4,8 @@ import moment from 'moment'
 
 import Modal from 'react-modal'
 import DateTimePicker from 'react-datetime-picker'
+import { useSelector, useDispatch } from 'react-redux';
+import { uiCloseModal } from '../../redux/actions/ui';
 
 const customStyles = {
     content: {
@@ -27,6 +29,9 @@ export const CalendarModal = () => {
     const [dateEnd, setDateEnd] = useState(nowPlus1.toDate())
     const [titleValid, setTitleValid] = useState(true)
 
+    const dispatch = useDispatch();
+    const { modalOpen } = useSelector( state => state.ui );
+    
     const [formValues, setFormValues] = useState({
         title: 'Evento',
         notes: 'Notas',
@@ -44,7 +49,7 @@ export const CalendarModal = () => {
     }
 
     const closeModal = () => {
-        //TODO: close modal
+        dispatch(uiCloseModal())
     }
 
     const handleStartDateChange = (e) => {
@@ -86,7 +91,7 @@ export const CalendarModal = () => {
 
     return (
         <Modal
-            isOpen={true}
+            isOpen={modalOpen}
             onRequestClose={closeModal}
             style={customStyles}
             closeTimeoutMS={200}
