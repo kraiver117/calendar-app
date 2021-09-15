@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import Swal from 'sweetalert2'
 import moment from 'moment'
 
 import Modal from 'react-modal'
@@ -24,6 +25,7 @@ const formatDateTime = "dd/MM/y h:mm:ss a"
 export const CalendarModal = () => {
     const [dateStart, setDateStart] = useState(now.toDate())
     const [dateEnd, setDateEnd] = useState(nowPlus1.toDate())
+    const [titleValid, setTitleValid] = useState(true)
 
     const [formValues, setFormValues] = useState({
         title: 'Evento',
@@ -32,7 +34,7 @@ export const CalendarModal = () => {
         end: nowPlus1.toDate()
     })
 
-    const { notes, title } = formValues
+    const { notes, title, start, end } = formValues
 
     const handleInputChange = ({ target }) => {
         setFormValues({
@@ -42,7 +44,7 @@ export const CalendarModal = () => {
     }
 
     const closeModal = () => {
-        console.log('closing...');
+        //TODO: close modal
     }
 
     const handleStartDateChange = (e) => {
@@ -63,7 +65,23 @@ export const CalendarModal = () => {
 
     const handleSubmitForm = (e) => {
         e.preventDefault()
-        console.log(formValues)
+
+        const momentStart = moment(start)
+        const momentEnd = moment(end)
+
+        console.log(momentStart, momentEnd)
+
+        if (momentStart.isSameOrAfter(momentEnd)) {
+            return Swal.fire('Error','La fecha de fin debe ser mayor a la fecha de inicio', 'error')
+        }
+
+        if (title.trim().length < 2) {
+            return setTitleValid(false)
+        }
+
+        //TODO: Save on database
+        setTitleValid(true)
+        closeModal()
     }
 
     return (
@@ -109,7 +127,7 @@ export const CalendarModal = () => {
                     <label>Titulo y notas</label>
                     <input 
                         type="text" 
-                        className="form-control"
+                        className={`form-control ${!titleValid && 'is-invalid'}`}
                         placeholder="Título del evento"
                         name="title"
                         autoComplete="off"
