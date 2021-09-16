@@ -6,7 +6,7 @@ import Modal from 'react-modal'
 import DateTimePicker from 'react-datetime-picker'
 import { useSelector, useDispatch } from 'react-redux';
 import { uiCloseModal } from '../../redux/actions/ui';
-import { eventAddNew, eventClearActiveEvent } from '../../redux/actions/events';
+import { eventAddNew, eventClearActiveEvent, eventUpdated } from '../../redux/actions/events';
 
 const customStyles = {
     content: {
@@ -96,14 +96,20 @@ export const CalendarModal = () => {
         }
 
         //TODO: Save on database
-        dispatch(eventAddNew({
-            ...formValues,
-            id: new Date().getTime(),
-            user: {
-                _id: '123',
-                name: 'Angel'
-            }
-        }))
+        if (activeEvent) {
+            //Update event
+            dispatch(eventUpdated(formValues))
+        } else{ 
+            //Create event
+            dispatch(eventAddNew({
+                ...formValues,
+                id: new Date().getTime(),
+                user: {
+                    _id: '123',
+                    name: 'Angel'
+                }
+            }))
+        }
 
         setTitleValid(true)
         closeModal()
