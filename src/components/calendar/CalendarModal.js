@@ -6,6 +6,7 @@ import Modal from 'react-modal'
 import DateTimePicker from 'react-datetime-picker'
 import { useSelector, useDispatch } from 'react-redux';
 import { uiCloseModal } from '../../redux/actions/ui';
+import { eventAddNew } from '../../redux/actions/events';
 
 const customStyles = {
     content: {
@@ -74,8 +75,6 @@ export const CalendarModal = () => {
         const momentStart = moment(start)
         const momentEnd = moment(end)
 
-        console.log(momentStart, momentEnd)
-
         if (momentStart.isSameOrAfter(momentEnd)) {
             return Swal.fire('Error','La fecha de fin debe ser mayor a la fecha de inicio', 'error')
         }
@@ -85,6 +84,15 @@ export const CalendarModal = () => {
         }
 
         //TODO: Save on database
+        dispatch(eventAddNew({
+            ...formValues,
+            id: new Date().getTime(),
+            user: {
+                _id: '123',
+                name: 'Angel'
+            }
+        }))
+
         setTitleValid(true)
         closeModal()
     }
