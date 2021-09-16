@@ -9,10 +9,11 @@ import { CalendarEvent } from './CalendarEvent'
 import { CalendarModal } from './CalendarModal';
 import { messages } from '../../helpers/calendar-messages-es'
 import { uiOpenModal } from '../../redux/actions/ui';
-import { eventSetActive } from '../../redux/actions/events';
+import { eventClearActiveEvent, eventSetActive } from '../../redux/actions/events';
 
 import 'react-big-calendar/lib/css/react-big-calendar.css'
 import 'moment/locale/es'
+import { DeleteEventFab } from '../ui/DeleteEventFab';
 
 moment.locale('es')
 
@@ -31,7 +32,7 @@ const localizer = momentLocalizer(moment)
 export const CalendarScreen = () => {
     const [lastView, setLastView] = useState(localStorage.getItem('lastView') || 'month')
     const dispatch = useDispatch();
-    const { events } = useSelector( state => state.calendar );
+    const { events, activeEvent } = useSelector( state => state.calendar );
 
     const onDoubleClick = (e) => {
         dispatch(uiOpenModal())
@@ -44,6 +45,10 @@ export const CalendarScreen = () => {
     const onViewChange = (e) => {
         setLastView(e)
         localStorage.setItem('lastView', e)
+    }
+
+    const onSelectSlot = (e) => {
+        dispatch(eventClearActiveEvent())
     }
 
     //Custom CSS in React Big calendar events
@@ -74,12 +79,17 @@ export const CalendarScreen = () => {
                 onSelectEvent={onSelect}
                 onView={onViewChange}
                 view={lastView}
+                onSelectSlot={onSelectSlot}
+                selectable={true}
                 eventPropGetter={eventStyleGetter}
                 components={{
                     event: CalendarEvent
                 }}
             />
             <AddNewFab />
+
+            { activeEvent && <DeleteEventFab /> }
+            
             <CalendarModal />
         </div>
     )
